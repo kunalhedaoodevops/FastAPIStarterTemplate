@@ -1,0 +1,17 @@
+fastapi
+uvicorn[standard]
+SQLAlchemy
+alembic
+python-jose
+passlib[bcrypt]
+pydantic
+pydantic-settings
+pytest
+httpx
+pytest-cov
+python-dotenv
+fastapi-cache2
+pydantic[email]
+python-multipart
+prometheus-client
+starlette_exporter

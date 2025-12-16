@@ -1,0 +1,12 @@
+__pycache__/
+.pytest_cache/
+.history/
+.venv/
+app/static/*
+*.pyc
+.env
+*.pyc
+*.pyo
+*.pyd
+*.db*
+.DS_Store
