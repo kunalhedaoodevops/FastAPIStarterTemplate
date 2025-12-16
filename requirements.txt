@@ -15,3 +15,5 @@ pydantic[email]
 python-multipart
 prometheus-client
 starlette_exporter
+strawberry-graphql[fastapi]
+strawberry-sqlalchemy

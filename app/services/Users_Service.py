@@ -1,5 +1,4 @@
 from sqlalchemy.orm import Session
-
 from ..databases import schemas
 from ..utils import security
 from ..models import users
@@ -21,8 +20,14 @@ def create_user(db: Session, user: schemas.UserCreate):
     return db_user
 
 def update_user(db: Session, db_user: users.User, changes: schemas.UserUpdate):
-    for k, v in changes.dict(exclude_unset=True).items():
-        setattr(db_user, k, v)
+    # ✅ Handle Pydantic OR dict
+    if hasattr(changes, "dict"):
+        changes = changes.dict(exclude_unset=True)
+
+    # ✅ Ignore None values (VERY IMPORTANT)
+    for k, v in changes.items():
+        if v is not None:
+            setattr(db_user, k, v)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)

@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from app.routes import files
 from .databases.db import engine
 from .models import base
-from .routes import files, users, items, health
+from .routes import files, users, items, health, graphql
 from .routes.auth import router as auth_router
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_cache import FastAPICache
@@ -63,3 +63,4 @@ app.include_router(users.router)
 app.include_router(items.router)
 app.include_router(files.router)
 app.include_router(health.router)
+app.include_router(graphql.graphql_app, prefix="/graphql", tags=["GraphQL"])
