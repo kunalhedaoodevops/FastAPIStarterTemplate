@@ -5,9 +5,11 @@ from app.graphql.resolvers.item_mutations import ItemMutation
 from app.graphql.resolvers.user_queries import UserQuery
 from app.graphql.resolvers.user_mutations import UserMutation
 from app.graphql.resolvers.auth_mutation import AuthMutation
+from app.graphql.resolvers.health_query import HealthQuery
+
 
 @strawberry.type
-class Query(UserQuery, ItemQuery):
+class Query(UserQuery, ItemQuery, HealthQuery):
     pass
 
 @strawberry.type
