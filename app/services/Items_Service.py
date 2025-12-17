@@ -6,7 +6,13 @@ from typing import Optional
 # Items
 
 def create_item(db: Session, owner_id: int, item: schemas.ItemCreate):
-    db_item = item_models.Item(**item.dict(), owner_id=owner_id)
+    # ✅ Handle Pydantic OR Strawberry input
+    if hasattr(item, "dict"):
+        data = item.dict()
+    else:
+        data = vars(item)
+
+    db_item = item_models.Item(**data, owner_id=owner_id)
     db.add(db_item)
     db.commit()
     db.refresh(db_item)
@@ -16,8 +22,15 @@ def get_item(db: Session, item_id: int):
     return db.query(item_models.Item).filter(item_models.Item.id == item_id).first()
 
 def update_item(db: Session, db_item: item_models.Item, changes: schemas.ItemUpdate):
-    for k, v in changes.dict(exclude_unset=True).items():
-        setattr(db_item, k, v)
+    # ✅ Accept Pydantic (REST) OR dict (GraphQL)
+    if hasattr(changes, "dict"):
+        changes = changes.dict(exclude_unset=True)
+
+    # ✅ Apply only provided, non-None fields
+    for k, v in changes.items():
+        if v is not None:
+            setattr(db_item, k, v)
+            
     db.add(db_item)
     db.commit()
     db.refresh(db_item)
