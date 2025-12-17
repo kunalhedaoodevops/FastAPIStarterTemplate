@@ -17,3 +17,5 @@ prometheus-client
 starlette_exporter
 strawberry-graphql[fastapi]
 strawberry-sqlalchemy
+psycopg[binary]
+psycopg2-binary

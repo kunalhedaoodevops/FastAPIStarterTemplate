@@ -2,6 +2,7 @@ from fastapi import FastAPI
 
 from app.routes import files
 from .databases.db import engine
+from .databases.seed import run_seed
 from .models import base
 from .routes import files, users, items, health, graphql
 from .routes.auth import router as auth_router
@@ -11,6 +12,7 @@ from fastapi_cache.backends.inmemory import InMemoryBackend
 from starlette_exporter import PrometheusMiddleware
 from pathlib import Path
 from fastapi.staticfiles import StaticFiles
+import os
 
 BASE_DIR = Path(__file__).resolve().parent
 
@@ -56,6 +58,8 @@ app.mount("/static", StaticFiles(directory="./app/static"), name="static")
 
 @app.on_event("startup")
 async def startup():
+    if os.getenv("RUN_SEED") == "true":
+        run_seed()
     FastAPICache.init(InMemoryBackend(), prefix="fastapi-cache")
 
 app.include_router(auth_router)
