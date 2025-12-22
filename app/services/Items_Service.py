@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from ..databases import schemas
 from ..models import items as item_models
 from typing import Optional
+from sqlalchemy import or_, func
 
 # Items
 
@@ -30,7 +31,7 @@ def update_item(db: Session, db_item: item_models.Item, changes: schemas.ItemUpd
     for k, v in changes.items():
         if v is not None:
             setattr(db_item, k, v)
-            
+
     db.add(db_item)
     db.commit()
     db.refresh(db_item)
@@ -54,3 +55,45 @@ def list_items(db: Session, skip: int = 0, limit: int = 10, search: Optional[str
     total = q.count()
     items = q.offset(skip).limit(limit).all()
     return items, total
+
+@staticmethod
+def portable_search(
+        db,
+        q=None,
+        min_price=None,
+        max_price=None,
+        owner_id=None,
+        cursor=None,
+        limit=20,
+    ):
+        query = db.query(item_models.Item)
+
+        # 🔍 Portable indexed search
+        if q:
+            q = q.strip().lower()
+
+            query = query.filter(
+                or_(
+                    func.lower(item_models.Item.title).startswith(q),
+                    func.lower(item_models.Item.description).startswith(q),
+                )
+            )
+
+        # Filters
+        if min_price is not None:
+            query = query.filter(item_models.Item.price >= min_price)
+
+        if max_price is not None:
+            query = query.filter(item_models.Item.price <= max_price)
+
+        if owner_id:
+            query = query.filter(item_models.Item.owner_id == owner_id)
+
+        # Cursor pagination (FAST everywhere)
+        if cursor:
+            query = query.filter(item_models.Item.id > cursor)
+        return (
+            query.order_by(item_models.Item.id)
+            .limit(limit)
+            .all()
+        )

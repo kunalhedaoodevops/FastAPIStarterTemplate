@@ -39,6 +39,38 @@ async def upload_file( request: Request, db: Session = Depends(get_db), file: Up
     # Save file record to database
     return Files_Service.save_file_record(db,filedata)
 
+@router.get("/search", response_model=List[schemas.FileOut], summary="Search files")
+def search_files(
+    q: str | None = None,
+    min_size: int | None = None,
+    max_size: int | None = None,
+    uploaded_by: int | None = None,
+    cursor: int | None = None,
+    limit: int = 20,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    if current_user.role not in ("admin", "user"):
+        raise HTTPException(status_code=403, detail="Not permitted")
+
+    if q and len(q) < 2:
+        raise HTTPException(
+            status_code=400,
+            detail="Search query must be at least 2 characters",
+        )
+
+    limit = min(limit, 50)
+
+    return Files_Service.portable_search_file(
+        db=db,
+        q=q,
+        min_size=min_size,
+        max_size=max_size,
+        uploaded_by=uploaded_by,
+        cursor=cursor,
+        limit=limit,
+    )
+
 @router.get("/download", summary="Download file")
 def download_file(
     file_id: int | None = None,

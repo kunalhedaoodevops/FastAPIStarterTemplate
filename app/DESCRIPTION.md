@@ -1,4 +1,4 @@
-# FastAPI Starter Template API helps you do awesome stuff. 🚀
+FastAPI Starter Template API helps you do awesome stuff. 🚀
 
 ## Items
 

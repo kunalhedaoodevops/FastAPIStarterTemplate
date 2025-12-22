@@ -8,7 +8,7 @@ from ..utils.deps import get_current_user, require_role
 from ..models import users as user_models
 from fastapi_cache.decorator import cache
 
-router = APIRouter(prefix='/users', tags=['users'])
+router = APIRouter(prefix='/users', tags=['Users'])
 
 @router.post('/', response_model=schemas.UserOut)
 def create_user(user_in: schemas.UserCreate, db: Session = Depends(get_db), current_user=Depends(require_role('admin'))):
@@ -22,6 +22,34 @@ def create_user(user_in: schemas.UserCreate, db: Session = Depends(get_db), curr
 def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user=Depends(require_role('admin'))):
     users = db.query(user_models.User).offset(skip).limit(limit).all()
     return users
+
+@router.get("/search", response_model=List[schemas.UserOut])
+@cache(expire=10)
+def search_users(
+    q: str | None = None,
+    role: str | None = None,
+    is_active: bool | None = None,
+    cursor: int | None = None,
+    limit: int = 20,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("admin")),
+):
+    if q and len(q) < 2:
+        raise HTTPException(
+            status_code=400,
+            detail="Search query must be at least 2 characters"
+        )
+
+    limit = min(limit, 50)
+
+    return Users_Service.portable_search_user(
+        db=db,
+        q=q,
+        role=role,
+        is_active=is_active,
+        cursor=cursor,
+        limit=limit,
+    )
 
 @router.get('/me', response_model=schemas.UserOut)
 @cache(expire=30)
@@ -50,3 +78,4 @@ def delete_user(user_id: int, db: Session = Depends(get_db), current_user=Depend
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='User not found')
     Users_Service.delete_user(db, user)
     return None
+

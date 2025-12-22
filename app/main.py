@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from app.routes import files
+from app.routes import docs, files
 from .databases.db import engine
 from .databases.seed import run_seed
 from .models import base
@@ -12,7 +12,7 @@ from fastapi_cache.backends.inmemory import InMemoryBackend
 from starlette_exporter import PrometheusMiddleware
 from pathlib import Path
 from fastapi.staticfiles import StaticFiles
-import os
+from app.core.config import settings
 
 BASE_DIR = Path(__file__).resolve().parent
 
@@ -58,7 +58,7 @@ app.mount("/static", StaticFiles(directory="./app/static"), name="static")
 
 @app.on_event("startup")
 async def startup():
-    if os.getenv("RUN_SEED") == "true":
+    if settings.RUN_SEED == True:
         run_seed()
     FastAPICache.init(InMemoryBackend(), prefix="fastapi-cache")
 
@@ -68,3 +68,4 @@ app.include_router(items.router)
 app.include_router(files.router)
 app.include_router(health.router)
 app.include_router(graphql.graphql_app, prefix="/graphql", tags=["GraphQL"])
+app.include_router(docs.router)

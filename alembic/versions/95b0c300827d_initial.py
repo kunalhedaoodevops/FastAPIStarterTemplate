@@ -59,6 +59,69 @@ def upgrade() -> None:
         ["stored_filename"],
         unique=True,
     )
+    # --------------------
+    # Sample data
+    # --------------------
+    users_table = sa.table(
+        "users",
+        sa.column("id", sa.Integer),
+        sa.column("email", sa.String),
+        sa.column("full_name", sa.String),
+        sa.column("hashed_password", sa.String),
+        sa.column("is_active", sa.Boolean),
+        sa.column("role", sa.String),
+    )
+
+    op.bulk_insert(
+        users_table,
+        [
+            {
+                "id": 1,
+                "email": "admin@example.com",
+                "full_name": "Admin User",
+                "hashed_password": "$pbkdf2-sha256$29000$l/IeA8DYe4.xNiaEcC6FUA$L/1exwVPaQ5FTnnAdAJZfqFzdr8VssjTIn6otONQjD8",
+                "is_active": True,
+                "role": "admin",
+            },
+            {
+                "id": 2,
+                "email": "user@example.com",
+                "full_name": "Normal User",
+                "hashed_password": "$pbkdf2-sha256$29000$PEdIydm7d87Zu3du7R0D4A$zNHC57tbd.h5XKlXeFDHVbGUJVSqd67I721GxIRJoG4",
+                "is_active": True,
+                "role": "user",
+            },
+        ],
+    )
+
+    items_table = sa.table(
+        "items",
+        sa.column("id", sa.Integer),
+        sa.column("title", sa.String),
+        sa.column("description", sa.Text),
+        sa.column("price", sa.Float),
+        sa.column("owner_id", sa.Integer),
+    )
+
+    op.bulk_insert(
+        items_table,
+        [
+            {
+                "id": 1,
+                "title": "Sample Item 1",
+                "description": "First sample item",
+                "price": 100.0,
+                "owner_id": 1,
+            },
+            {
+                "id": 2,
+                "title": "Sample Item 2",
+                "description": "Second sample item",
+                "price": 50.0,
+                "owner_id": 2,
+            },
+        ],
+    )
 
 
 

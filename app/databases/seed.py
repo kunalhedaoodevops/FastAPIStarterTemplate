@@ -9,7 +9,6 @@ def run_seed(db: Session = next(get_db())):
         admin_email = "admin@example.com"
 
         admin = db.query(User).filter(User.email == admin_email).first()
-
         if not admin:
             admin = User(
                 email=admin_email,

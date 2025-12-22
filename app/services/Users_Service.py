@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from ..databases import schemas
 from ..utils import security
 from ..models import users
-
+from sqlalchemy import or_, func
 # Users
 
 def get_user(db: Session, user_id: int):
@@ -37,3 +37,36 @@ def delete_user(db: Session, db_user: users.User):
     db.delete(db_user)
     db.commit()
     return True
+
+@staticmethod
+def portable_search_user(
+    db,
+    q=None,
+    role=None,
+    is_active=None,
+    cursor=None,
+    limit=20,
+):
+    query = db.query(users.User)
+    # 🔍 Portable search (prefix-based)
+    if q:
+        q = q.strip().lower()
+        query = query.filter(
+            or_(
+                func.lower(users.User.full_name).startswith(q),
+                func.lower(users.User.email).startswith(q),
+            )
+        )
+    # Filters
+    if role:
+        query = query.filter(users.User.role == role)
+    if is_active is not None:
+        query = query.filter(users.User.is_active == is_active)
+    # Cursor pagination
+    if cursor:
+        query = query.filter(users.User.id > cursor)
+    return (
+        query.order_by(users.User.id)
+        .limit(limit)
+        .all()
+    )

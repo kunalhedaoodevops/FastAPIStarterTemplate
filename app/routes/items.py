@@ -7,12 +7,35 @@ from ..databases.db import get_db
 from ..utils.deps import get_current_user
 from fastapi_cache.decorator import cache
 
-router = APIRouter(prefix='/items', tags=['items'])
+router = APIRouter(prefix='/items', tags=['Items'])
 
 @router.post('/', response_model=schemas.ItemOut)
 @cache(expire=30)
 def create_item(item_in: schemas.ItemCreate, db: Session = Depends(get_db), current_user=Depends(get_current_user)):
     return Items_Service.create_item(db, owner_id=current_user.id, item=item_in)
+
+@router.get("/search", response_model=List[schemas.ItemOut])
+@cache(expire=10)
+def fast_search_items(
+    q: Optional[str] = None,
+    min_price: Optional[float] = None,
+    max_price: Optional[float] = None,
+    owner_id: Optional[int] = None,
+    cursor: Optional[int] = None,
+    limit: int = 20,
+    db: Session = Depends(get_db),
+):
+    limit = min(limit, 100)
+
+    return Items_Service.portable_search(
+        db=db,
+        q=q,
+        min_price=min_price,
+        max_price=max_price,
+        owner_id=owner_id,
+        cursor=cursor,
+        limit=limit,
+    )
 
 @router.get('/{item_id}', response_model=schemas.ItemOut)
 @cache(expire=30)
@@ -48,3 +71,4 @@ def delete_item(item_id: int, db: Session = Depends(get_db), current_user=Depend
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Not permitted')
     Items_Service.delete_item(db, db_item)
     return None
+
