@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-
 from app.routes import docs, files
 from .databases.db import engine
 from .databases.seed import run_seed
@@ -40,7 +39,10 @@ app = FastAPI(
 origins = [
     "http://localhost",
     "http://localhost:8080",
-    "https://yourdomain.com",
+    "http://192.168.1.5",
+    "http://192.168.1.5:8000",
+    "http://0.0.0.0",
+    "http://0.0.0.0:8000"
 ]
 
 app.add_middleware(
