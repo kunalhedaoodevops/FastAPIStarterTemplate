@@ -3,6 +3,7 @@ __pycache__/
 .history/
 .venv/
 app/static/*
+.idea/
 *.pyc
 .env
 *.pyc
@@ -10,3 +11,4 @@ app/static/*
 *.pyd
 *.db*
 .DS_Store
+*.lock

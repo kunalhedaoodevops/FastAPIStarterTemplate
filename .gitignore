@@ -11,3 +11,4 @@ app/static/*
 *.pyd
 *.db*
 .DS_Store
+*.lock

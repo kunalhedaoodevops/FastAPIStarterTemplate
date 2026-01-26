@@ -19,3 +19,4 @@ strawberry-graphql[fastapi]
 strawberry-sqlalchemy
 psycopg[binary]
 psycopg2-binary
+scalar_fastapi
