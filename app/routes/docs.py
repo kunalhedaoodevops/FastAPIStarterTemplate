@@ -3,8 +3,8 @@ from fastapi import APIRouter
 from scalar_fastapi import Theme
 
 
-router = APIRouter(prefix='/docs', tags=['Docs'])
-@router.get("/scalar", include_in_schema=True, summary="Scalar API Reference")
+router = APIRouter(prefix='/docs', tags=['📄 Documentation'])
+@router.get("/scalar", include_in_schema=True, summary="Scalar API Modern UI")
 async def scalar_html():
     return get_scalar_api_reference(
         # Your OpenAPI document

@@ -56,7 +56,7 @@ app.add_middleware(
 # Prometheus middleware stays here
 app.add_middleware(PrometheusMiddleware)
 
-app.mount("/static", StaticFiles(directory="./app/static"), name="static")
+app.mount("/static", StaticFiles(directory="./app/static"), name="st atic")
 
 @app.on_event("startup")
 async def startup():
@@ -69,5 +69,5 @@ app.include_router(users.router)
 app.include_router(items.router)
 app.include_router(files.router)
 app.include_router(health.router)
-app.include_router(graphql.graphql_app, prefix="/graphql", tags=["GraphQL"])
+app.include_router(graphql.graphql_app, prefix="/graphql", tags=["🔎 GraphQL APIs"])
 app.include_router(docs.router)

@@ -10,12 +10,16 @@ import uuid
 from typing import List
 from fastapi_cache.decorator import cache
 
-router = APIRouter(prefix='/files', tags=['Files'])
+router = APIRouter(prefix='/files', tags=['📁 File Management APIs'])
 
 UPLOAD_DIR = Path("./app/static/uploads")
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
-@router.post("/upload", summary="Upload a file", response_model=schemas.FileOut)
+@router.post("/upload", summary="Upload File", response_model=schemas.FileOut, description="""Uploads a file and stores its metadata.
+- Auth Required: ✅
+- Input: Multipart file
+- Output: File metadata
+- Used For: File storage""")
 async def upload_file( request: Request, db: Session = Depends(get_db), file: UploadFile = File(...), current_user=Depends(get_current_user)):
     if current_user.role != 'admin' and current_user.role != 'user':
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Not permitted')
@@ -39,7 +43,13 @@ async def upload_file( request: Request, db: Session = Depends(get_db), file: Up
     # Save file record to database
     return Files_Service.save_file_record(db,filedata)
 
-@router.get("/search", response_model=List[schemas.FileOut], summary="Search files")
+@router.get("/search", response_model=List[schemas.FileOut], summary="Search Files", description="""Searches files using size, name, uploader, or cursor pagination.
+- Auth Required: ✅
+- Query Params:
+    * `q`, `min_size`, `max_size`
+    * `uploaded_by`, `cursor`, `limit`
+- Output: Matching files
+- Used For: File discovery""")
 def search_files(
     q: str | None = None,
     min_size: int | None = None,
@@ -71,7 +81,11 @@ def search_files(
         limit=limit,
     )
 
-@router.get("/download", summary="Download file")
+@router.get("/download", summary="Download File", description="""Downloads a file using file ID or filename.
+- Auth Required: ✅
+- Query Params: `file_id` or `filename`
+- Output: File stream
+- Used For: File retrieval""")
 def download_file(
     file_id: int | None = None,
     filename: str | None = None,
@@ -115,7 +129,11 @@ def download_file(
 @router.get(
     "/",
     response_model=List[schemas.FileOut],
-    summary="List uploaded files",
+    summary="List Files",
+    description="""Returns all uploaded files accessible to the user.
+    - Auth Required: ✅
+    - Output: List of files
+    - Used For: File browsing"""
 )
 @cache(expire=30)
 def get_files(db: Session = Depends(get_db), current_user=Depends(get_current_user)):
@@ -124,7 +142,11 @@ def get_files(db: Session = Depends(get_db), current_user=Depends(get_current_us
 
     return Files_Service.list_files(db)
 
-@router.get('/{file_id}', response_model=schemas.FileOut, summary="Get file")
+@router.get('/{file_id}', response_model=schemas.FileOut, summary="Get File Metadata", description="""Returns metadata information of a specific file.
+- Auth Required: ✅
+- Path Param: `file_id`
+- Output: File metadata
+- Used For: File inspection""")
 @cache(expire=30)
 def read_file(file_id: int, db: Session = Depends(get_db), current_user=Depends(get_current_user)):
     if current_user.role != 'admin' and current_user.role != 'user':
@@ -138,7 +160,12 @@ def read_file(file_id: int, db: Session = Depends(get_db), current_user=Depends(
 @router.delete(
     "/{file_id}",
     status_code=status.HTTP_200_OK,
-    summary="Delete file",
+    summary="Delete File",
+    description="""Deletes a file and its metadata.
+    - Auth Required: ✅
+    - Path Param: `file_id`
+    - Output: Success acknowledgment
+    - Used For: File cleanup"""
 )
 def remove_file(
     file_id: int,
