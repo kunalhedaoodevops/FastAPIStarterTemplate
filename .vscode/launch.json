@@ -16,6 +16,24 @@
             ],
             "jinja": true,
             "justMyCode": false
+        },
+        {
+            "name": "React Debug (Chrome)",
+            "type": "chrome",
+            "request": "launch",
+            "url": "http://localhost:5173",
+            "webRoot": "${workspaceFolder}/fastapi-ui",
+            "sourceMaps": true,
+            "preLaunchTask": "Start React App"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Full Stack Debug (FastAPI + React)",
+            "configurations": [
+                "FastAPI Debug",
+                "React Debug (Chrome)"
+            ]
         }
     ]
 }

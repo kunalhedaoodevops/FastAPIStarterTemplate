@@ -26,4 +26,6 @@ dependencies = [
     "psycopg[binary]>=3.3.2",
     "psycopg2-binary>=2.9.11",
     "scalar-fastapi>=1.6.1",
+    "faker>=40.4.0",
+    "tqdm>=4.67.3",
 ]

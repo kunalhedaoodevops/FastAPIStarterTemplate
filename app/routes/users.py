@@ -31,6 +31,15 @@ def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), c
     users = db.query(user_models.User).offset(skip).limit(limit).all()
     return users
 
+@router.get('/count', response_model=int, summary="Users Count", description="""Returns a paginated list of users.
+- Auth Required: ✅
+- Output: Get All Users Count
+- Used For: Admin user management""")
+@cache(expire=30)
+def read_users_count( db: Session = Depends(get_db), current_user=Depends(require_role('admin'))):
+    users = db.query(user_models.User).count()
+    return users
+
 @router.get("/search", response_model=List[schemas.UserOut], summary="Search Users", description="""Provides advanced filtering and searching of users.
 - Auth Required: ✅
 - Query Params:
@@ -39,6 +48,7 @@ def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), c
     * `role`
     * `cursor`
     * `limit`
+    * `skip`
 - Output: Filtered user list
 - Used For: Large-scale user search""")
 @cache(expire=10)
@@ -48,6 +58,7 @@ def search_users(
     is_active: bool | None = None,
     cursor: int | None = None,
     limit: int = 20,
+    skip: int = 0,
     db: Session = Depends(get_db),
     current_user=Depends(require_role("admin")),
 ):
@@ -66,6 +77,7 @@ def search_users(
         is_active=is_active,
         cursor=cursor,
         limit=limit,
+        skip=skip,  # Cursor-based pagination doesn't use skip
     )
 
 @router.get('/me', response_model=schemas.UserOut, summary="Get Current User", description="""Returns details of the currently authenticated user.

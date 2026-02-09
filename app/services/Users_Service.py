@@ -46,6 +46,7 @@ def portable_search_user(
     is_active=None,
     cursor=None,
     limit=20,
+    skip=0,
 ):
     query = db.query(users.User)
     # 🔍 Portable search (prefix-based)
@@ -67,6 +68,7 @@ def portable_search_user(
         query = query.filter(users.User.id > cursor)
     return (
         query.order_by(users.User.id)
+        .offset(skip)
         .limit(limit)
         .all()
     )

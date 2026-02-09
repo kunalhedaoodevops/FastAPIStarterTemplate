@@ -65,6 +65,7 @@ def portable_search(
         owner_id=None,
         cursor=None,
         limit=20,
+        skip=0,
     ):
         query = db.query(item_models.Item)
 
@@ -94,6 +95,7 @@ def portable_search(
             query = query.filter(item_models.Item.id > cursor)
         return (
             query.order_by(item_models.Item.id)
+            .offset(skip)
             .limit(limit)
             .all()
         )

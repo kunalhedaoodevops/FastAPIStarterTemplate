@@ -1,33 +1,65 @@
 {
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "label": "Alembic: Upgrade Head",
-      "type": "shell",
-      "command": "${command:python.interpreterPath}",
-      "args": ["-m", "alembic", "upgrade", "head"],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "presentation": {
-        "reveal": "always",
-        "panel": "shared"
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "Pytest: Run Quiet",
-      "type": "shell",
-      "command": "${command:python.interpreterPath}",
-      "args": ["-m", "pytest", "-q"],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "presentation": {
-        "reveal": "always",
-        "panel": "shared"
-      },
-      "problemMatcher": []
-    }
-  ]
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Alembic: Upgrade Head",
+            "type": "shell",
+            "command": "${command:python.interpreterPath}",
+            "args": [
+                "-m",
+                "alembic",
+                "upgrade",
+                "head"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Pytest: Run Quiet",
+            "type": "shell",
+            "command": "${command:python.interpreterPath}",
+            "args": [
+                "-m",
+                "pytest",
+                "-q"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Start React App",
+            "type": "shell",
+            "command": "bash",
+            "args": [
+                "-lc",
+                "export NVM_DIR=\"/home/linuxbrew/.linuxbrew/opt/nvm\" && source \"$NVM_DIR/nvm.sh\" && nvm use && npm run dev"
+            ],
+            "options": {
+                "cwd": "/home/kunal/Workplace/StarterTemplate/fastapi-ui"
+            },
+            "isBackground": true,
+            "problemMatcher": {
+                "pattern": [
+                    { "regexp": ".*" }
+                ],
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": ".*",
+                    "endsPattern": "Local.*|ready in.*|compiled successfully.*|VITE v.*ready"
+                }
+            }
+        }
+    ]
 }
