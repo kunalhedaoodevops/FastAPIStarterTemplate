@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, String, BigInteger, DateTime
+from sqlalchemy import Column, Integer, String, BigInteger, DateTime, ForeignKey
 from .base import Base
 from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
 
 class FileStore(Base):
     __tablename__ = "filestore"
@@ -11,3 +12,5 @@ class FileStore(Base):
     file_size = Column(BigInteger, nullable=False)
     client_ip = Column(String(45))
     uploaded_at = Column(DateTime(timezone=True), server_default=func.now())
+    owner_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    owner = relationship('User', back_populates='filestore')

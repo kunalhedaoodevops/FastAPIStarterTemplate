@@ -55,6 +55,7 @@ class FileCreate(BaseModel):
     stored_filename: str
     file_size: int
     client_ip: str | None = None
+    owner_id: int
 
 
 # 🔸 Output schema (READ)
@@ -65,7 +66,7 @@ class FileOut(BaseModel):
     file_size: int
     client_ip: str | None
     uploaded_at: datetime
-
+    owner_id: int
     model_config = ConfigDict(from_attributes=True)
 
 class ForgotPasswordRequest(BaseModel):

@@ -8,6 +8,7 @@ from ..services import Users_Service
 from app.utils.password_reset import verify_reset_token, create_reset_token
 from app.utils.email import send_reset_email
 from app.utils.security import get_password_hash
+from app.core.config import settings
 
 router = APIRouter(prefix='/auth', tags=['🔐 Authentication APIs'])
 
@@ -45,7 +46,8 @@ def forgot_password(
     # Do NOT reveal if user exists
     if user:
         token = create_reset_token(user.email)
-        reset_link = f"https://your-frontend.com/reset-password?token={token}"
+        frontend = settings.FRONTEND_URL
+        reset_link = f"{frontend}/reset-password?token={token}"
         send_reset_email(user.email, reset_link)
 
     return {"message": "If the email exists, a reset link has been sent"}

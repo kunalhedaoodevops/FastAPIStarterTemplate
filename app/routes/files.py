@@ -39,6 +39,7 @@ async def upload_file( request: Request, db: Session = Depends(get_db), file: Up
         stored_filename=new_filename,
         file_size=file_path.stat().st_size,
         client_ip=request.client.host if request.client else None,
+        owner_id=current_user.id
     )
     # Save file record to database
     return Files_Service.save_file_record(db,filedata)
@@ -140,7 +141,7 @@ def get_files(db: Session = Depends(get_db), current_user=Depends(get_current_us
     if current_user.role != 'admin' and current_user.role != 'user':
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Not permitted')
 
-    return Files_Service.list_files(db)
+    return Files_Service.list_files(db, current_user)
 
 @router.get('/{file_id}', response_model=schemas.FileOut, summary="Get File Metadata", description="""Returns metadata information of a specific file.
 - Auth Required: ✅

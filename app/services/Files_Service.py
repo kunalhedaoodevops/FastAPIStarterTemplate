@@ -13,18 +13,23 @@ def save_file_record(db: Session, filebase: schemas.FileCreate):
         stored_filename=filebase.stored_filename,
         file_size=filebase.file_size,
         client_ip=filebase.client_ip,
+        owner_id=filebase.owner_id
     )
     db.add(db_file)
     db.commit()
     db.refresh(db_file)
     return db_file
 
-def list_files(db: Session):
-    return (
-        db.query(files_models.FileStore)
-        .order_by(files_models.FileStore.uploaded_at.desc())
-        .all()
+def list_files(db: Session, current_user):
+    query = db.query(files_models.FileStore).order_by(
+        files_models.FileStore.uploaded_at.desc()
     )
+
+    if current_user.role != "admin":
+        query = query.filter(files_models.FileStore.owner_id == current_user.id)
+
+    return query.all()
+
 def get_file(db: Session, file_id: int) -> Optional[files_models.FileStore]:
     return db.query(files_models.FileStore).filter(files_models.FileStore.id == file_id).first()
 

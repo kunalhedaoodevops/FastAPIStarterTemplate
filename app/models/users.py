@@ -11,3 +11,4 @@ class User(Base):
     is_active = Column(Boolean(), default=True)
     role = Column(String(50), default='user')
     items = relationship('Item', back_populates='owner')
+    filestore = relationship('FileStore', back_populates='owner')
